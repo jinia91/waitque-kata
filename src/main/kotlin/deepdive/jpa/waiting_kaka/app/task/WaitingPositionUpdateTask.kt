@@ -5,6 +5,7 @@ import deepdive.jpa.waiting_kaka.app.outbound.WaitingLine
 import jakarta.annotation.PostConstruct
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 
@@ -13,15 +14,9 @@ class WaitingPositionUpdateTask(
     private val sessionStorage: SessionStorage,
     private val waitingLine: WaitingLine,
 ) {
-    @PostConstruct
+    @Scheduled(fixedRate = 1000)
     fun start() {
-        val executor = Executors.newSingleThreadScheduledExecutor()
-        executor.scheduleAtFixedRate(
-            { broadcastCurrentPosition() },
-            0,
-            1,
-            TimeUnit.SECONDS
-        )
+        broadcastCurrentPosition()
     }
 
     private fun broadcastCurrentPosition() {

@@ -13,32 +13,29 @@
 <div id="status" style="margin-top: 20px;"></div>
 
 <script>
-    let queueToken = null;
-    let purchaseToken = null;
-    let userName = '유저' + Math.floor(Math.random() * 1000)
+    let userId = '유저' + Math.floor(Math.random() * 1000)
 
-    console.log('유저 이름:', userName);
+    console.log('유저 이름:', userId);
 
     function enterQueue() {
         fetch('http://localhost:7776/ticket/enter', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({userId: userName })
+            body: JSON.stringify({userId: userId })
             }
         )
             .then(res => res.json())
             .then(data => {
-                queueToken = data.queueToken;
                 document.getElementById('status').innerText =
                     `대기열에 입장했습니다. 내 순번: ${data.position}\n대기중...`;
 
-                listenToQueue(queueToken);
+                listenToQueue(userId);
             });
         document.getElementById('enterQueueBtn').disabled = true;
     }
 
-    function listenToQueue(token) {
-        const eventSource = new EventSource(`http://localhost:7776/ticket/queue-status/stream?queueToken=${token}`);
+    function listenToQueue(userId) {
+        const eventSource = new EventSource(`http://localhost:7776/ticket/queue-status/stream?userId=${userId}`);
 
         eventSource.addEventListener("position", (event) => {
             const data = JSON.parse(event.data);
@@ -47,17 +44,15 @@
         });
 
         eventSource.addEventListener("ready", (event) => {
-            const data = JSON.parse(event.data);
-            purchaseToken = data.token;
+            console.log('티켓팅 가능!');
             document.getElementById('status').innerText =
-                ` 입장 가능! 토큰: ${purchaseToken} (30초 유효)\n\n 자동으로 구매를 진행합니다...`;
+                ` 입장 가능! (30초 유효)\n\n 자동으로 구매를 진행합니다...`;
 
             fetch('http://localhost:7776/ticket/purchase', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: userName,
-                    purchaseToken: purchaseToken
+                    userId: userId,
                 })
             })
                 .then(res => res.text())

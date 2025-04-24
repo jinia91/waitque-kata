@@ -9,7 +9,7 @@ class PerchaseService(
 ) {
     fun purchase(userId: String): String {
         try {
-            check(entry.check(userId)) {
+            check(entry.isIn(userId)) {
                 "엔트리에 등록되지 않은 사용자입니다"
             }
             return "구매 성공"

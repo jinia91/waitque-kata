@@ -18,7 +18,7 @@ class WaitingController(
         val userId: String,
     )
     data class WaitingResponse(
-        val queueToken: String,
+        val userId: String,
         val position: Int
     )
 
