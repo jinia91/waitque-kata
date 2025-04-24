@@ -20,4 +20,8 @@ class Entry(
     fun out(token: String) {
         set.remove(token)
     }
+
+    fun check(token: String): Boolean {
+        return set.contains(token)
+    }
 }

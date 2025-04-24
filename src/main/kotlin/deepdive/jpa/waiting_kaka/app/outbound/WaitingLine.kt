@@ -5,11 +5,12 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import org.springframework.stereotype.Component
 
 @Component
-class WaitingQueue(
+class WaitingLine(
     val queue: Queue<String> = ConcurrentLinkedQueue(),
 ) {
 
-    fun enterQueue(token: String) {
+    fun wait(token: String) : Int {
         queue.add(token)
+        return queue.size
     }
 }

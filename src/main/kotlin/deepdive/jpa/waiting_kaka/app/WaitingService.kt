@@ -1,29 +1,26 @@
 package deepdive.jpa.waiting_kaka.app
 
-import deepdive.jpa.waiting_kaka.app.outbound.WaitingQueue
+import deepdive.jpa.waiting_kaka.app.outbound.WaitingLine
 import org.springframework.stereotype.Service
 
 data class WaitingQueueInfo(
-    val waitingToken: String,
     val waitingSequenceNumber: Int
 ) {
     companion object {
-        fun from(queueToken: String, queueSize: Int): WaitingQueueInfo {
-            return WaitingQueueInfo(queueToken, queueSize)
+        fun from(position: Int): WaitingQueueInfo {
+            return WaitingQueueInfo(position)
         }
     }
 }
 
 @Service
 class WaitingService(
-    private val waitingQueue: WaitingQueue
+    private val waitLine: WaitingLine
 ) {
     fun wait(userId: String): WaitingQueueInfo {
-        val queueToken = userId + "-" + System.currentTimeMillis()
-        waitingQueue.enterQueue(queueToken)
+        val position = waitLine.wait(userId)
         return WaitingQueueInfo.from(
-            queueToken = queueToken,
-            queueSize = waitingQueue.queue.size
+            position = position
         )
     }
 }

@@ -14,7 +14,7 @@ class WaitingController(
     private val perchaseService: PerchaseService
 ) {
 
-    data class EnterQueueRequest(
+    data class WaitingRequest(
         val userId: String,
     )
     data class WaitingResponse(
@@ -23,33 +23,31 @@ class WaitingController(
     )
 
     @PostMapping("/enter")
-    fun enterWaiting(
-        @RequestBody request: EnterQueueRequest
+    fun wait(
+        @RequestBody request: WaitingRequest
     ): WaitingResponse {
         val info = waitingService.wait(request.userId)
-        return WaitingResponse(info.waitingToken, info.waitingSequenceNumber)
+        return WaitingResponse(request.userId, info.waitingSequenceNumber)
     }
 
     @GetMapping("/queue-status/stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun subscribeWaitingStatus(@RequestParam queueToken: String): SseEmitter {
+    fun subscribeWaitingStatus(@RequestParam userId: String): SseEmitter {
         val emitter = SseEmitter(60000)
-        sessionStorage.addSession(queueToken, emitter)
-        emitter.onCompletion { sessionStorage.removeSession(queueToken) }
-        emitter.onTimeout { sessionStorage.removeSession(queueToken) }
+        sessionStorage.addSession(userId, emitter)
+        emitter.onCompletion { sessionStorage.removeSession(userId) }
+        emitter.onTimeout { sessionStorage.removeSession(userId) }
         return emitter
     }
 
     data class PurchaseRequest(
-        val userId: String,
-        val purchaseToken: String
+        val userId: String
     )
 
     @PostMapping("/purchase")
     fun purchase(@RequestBody request: PurchaseRequest): String {
         Thread.sleep(5000)
         val userId = request.userId
-        val purchaseToken = request.purchaseToken
-        val result = perchaseService.purchase(userId, purchaseToken)
+        val result = perchaseService.purchase(userId)
         return result
     }
 }
