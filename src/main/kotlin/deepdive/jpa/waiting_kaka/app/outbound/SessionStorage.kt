@@ -1,4 +1,4 @@
-package deepdive.jpa.waiting_kaka.app
+package deepdive.jpa.waiting_kaka.app.outbound
 
 import java.util.concurrent.ConcurrentHashMap
 import org.springframework.stereotype.Component

@@ -1,7 +1,6 @@
 package deepdive.jpa.waiting_kaka.app
 
-import deepdive.jpa.waiting_kaka.PerchaseService
-import deepdive.jpa.waiting_kaka.app.outbound.PerchaseTokenStore
+import deepdive.jpa.waiting_kaka.app.outbound.SessionStorage
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
@@ -14,20 +13,21 @@ class WaitingController(
     private val waitingService: WaitingService,
     private val perchaseService: PerchaseService
 ) {
+
     data class EnterQueueRequest(
         val userId: String,
     )
-    data class QueueResponse(
+    data class WaitingResponse(
         val queueToken: String,
         val position: Int
     )
 
     @PostMapping("/enter")
-    fun enterQueue(
+    fun enterWaiting(
         @RequestBody request: EnterQueueRequest
-    ): QueueResponse {
+    ): WaitingResponse {
         val info = waitingService.wait(request.userId)
-        return QueueResponse(info.queueToken, info.queueSize)
+        return WaitingResponse(info.waitingToken, info.waitingSequenceNumber)
     }
 
     @GetMapping("/queue-status/stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])

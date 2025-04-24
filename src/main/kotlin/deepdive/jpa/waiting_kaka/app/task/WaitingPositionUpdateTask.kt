@@ -1,6 +1,6 @@
 package deepdive.jpa.waiting_kaka.app.task
 
-import deepdive.jpa.waiting_kaka.app.SessionStorage
+import deepdive.jpa.waiting_kaka.app.outbound.SessionStorage
 import deepdive.jpa.waiting_kaka.app.outbound.WaitingQueue
 import jakarta.annotation.PostConstruct
 import java.util.concurrent.Executors
